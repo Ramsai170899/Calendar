@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Calendar App</div>
+        </header>
+        
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <a href="{{ url_for('index', year=prev_year, month=prev_month) }}" class="nav-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <h2>{{ month_name }} {{ year }}</h2>
+                <a href="{{ url_for('index', year=next_year, month=next_month) }}" class="nav-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+            
+            <div class="calendar">
+                <div class="weekdays">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+                
+                <div class="days">
+                    {% for week in cal %}
+                        {% for day in week %}
+                            {% if day == 0 %}
+                                <div class="empty"></div>
+                            {% else %}
+                                {% set date_str = '%d-%02d-%02d'|format(year, month, day) %}
+                                {% set is_today = year == today.year and month == today.month and day == today.day %}
+                                
+                                <div class="day-flip-container" data-date="{{ date_str }}">
+                                    <div class="day-flipper">
+                                        <div class="day-front {% if is_today %}today{% endif %}">
+                                            <div class="day-number">{{ day }}</div>
+                                            <div class="task-indicator"></div>
+                                        </div>
+                                        <div class="day-back">
+                                            <textarea class="notes-area" placeholder="Add notes for this day..."></textarea>
+                                            <button class="save-notes-btn">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="task-panel">
+            <div class="panel-header">
+                <h3>Tasks for <span id="selected-date"></span></h3>
+                <div class="task-controls">
+                    <button id="add-task-btn"><i class="fas fa-plus"></i> Add Task</button>
+                </div>
+            </div>
+            
+            <div id="task-form" class="hidden">
+                <input type="text" id="new-task" placeholder="Enter new task...">
+                <div class="task-options">
+                    <label>Apply to:</label>
+                    <select id="task-days">
+                        <option value="all">All days</option>
+                        <option value="weekday">Weekdays</option>
+                        <option value="weekend">Weekends</option>
+                    </select>
+                </div>
+                <div class="form-buttons">
+                    <button id="save-task">Save</button>
+                    <button id="cancel-task">Cancel</button>
+                </div>
+            </div>
+            
+            <ul id="task-list"></ul>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
